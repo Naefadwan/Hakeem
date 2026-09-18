@@ -42,18 +42,31 @@ def update_html():
         imgs = sorted(glob.glob(f"{sdir}/*.jpg"))
         if not imgs:
             continue
-        
+
         cover = f"{sdir}/cover.jpg"
         if not os.path.exists(cover):
             cover = imgs[0]
-            
+        images = [cover] + [p for p in imgs if p != cover]
+
+        title = f"Event Decor {set_num - 1}"
+        description = "A luxury decor setup crafted with elegance and attention to detail."
+        meta_path = os.path.join(sdir, ".meta.json")
+        if os.path.isfile(meta_path):
+            try:
+                with open(meta_path, "r", encoding="utf-8") as mf:
+                    meta = json.load(mf)
+                title = meta.get("title") or title
+                description = meta.get("description") or description
+            except (json.JSONDecodeError, OSError):
+                pass
+
         collections.append({
             "id": set_num,
-            "title": f"Event Decor {set_num - 1}",
+            "title": title,
             "category": "Events & Decor",
             "cover": cover,
-            "description": "A luxury decor setup crafted with elegance and attention to detail.",
-            "images": imgs
+            "description": description,
+            "images": images
         })
 
     js_code = "const decorCollections = " + json.dumps(collections, indent=4) + ";"

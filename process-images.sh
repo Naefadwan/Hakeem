@@ -15,6 +15,11 @@ INPUT_DIR="$1"
 SET_ARG="$2"
 
 # ── Validate args ───────────────────────────────────────────
+if ! command -v magick >/dev/null 2>&1; then
+    echo "  ✗ ImageMagick (magick) is required. See .tools/README.md"
+    exit 1
+fi
+
 if [ -z "$INPUT_DIR" ] || [ -z "$SET_ARG" ]; then
     echo ""
     echo "  Usage: bash process-images.sh <input-folder> <set-name|auto>"

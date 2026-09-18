@@ -29,17 +29,23 @@ def get_ranges(indices, max_val):
         segs.append((curr, max_val))
     return segs
 
-def process():
+def process(replace_sets: bool = False):
     input_dir = "media/decor/new-set"
     files = sorted(glob.glob(f"{input_dir}/*"))
     if not files:
         print("No files found!")
         return
 
-    # Clean out set-02 through set-99
-    for set_dir in glob.glob("media/decor/set-*"):
-        if set_dir != "media/decor/set-01":
-            subprocess.run(["rm", "-rf", set_dir])
+    if replace_sets:
+        print("  ! Deleting media/decor/set-02 … set-99 (replace mode)")
+        for set_dir in glob.glob("media/decor/set-*"):
+            if set_dir != "media/decor/set-01":
+                subprocess.run(["rm", "-rf", set_dir])
+    else:
+        print("  ✗ Refusing to delete existing sets.")
+        print("    Use: python3 import_new_set.py  (safe, recommended)")
+        print("    Or:  python3 process_collages.py --replace-sets  (destructive)")
+        return
 
     set_counter = 2
     decor_collections = []
@@ -132,4 +138,6 @@ def process():
     return decor_collections
 
 if __name__ == "__main__":
-    process()
+    import sys
+    replace = "--replace-sets" in sys.argv
+    process(replace_sets=replace)
